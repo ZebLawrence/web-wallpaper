@@ -42,12 +42,14 @@ screensaver/DWM tricks are fragile.
 
 ## Architecture
 
-Single C# WPF app, `net10.0-windows`, published self-contained for win-x64.
+Single C# WinForms app, `net10.0-windows`, published self-contained for win-x64.
+(WinForms rather than WPF: it works in physical pixels, which matches the WorkerW child
+coordinate space directly, and `NotifyIcon` is the native tray-icon API.)
 
 | Component | Responsibility |
 |---|---|
 | `WallpaperInterop` | Win32 layer: find `Progman`, spawn/locate `WorkerW` (with 24H2 fallback), `SetParent`, refresh desktop on exit. |
-| `WallpaperWindow` | One borderless, non-activating WPF window per monitor, sized to the monitor's pixel bounds, hosting a WebView2 (`IsMuted = true`, context menus / dev tools / accelerator keys disabled). |
+| `WallpaperWindow` | One borderless, non-activating WinForms window per monitor, sized to the monitor's pixel bounds, hosting a WebView2 (`IsMuted = true`, context menus / dev tools / accelerator keys disabled). |
 | `TrayIcon` | The only visible UI. Menu: Set URL… (small dialog), Reload, Pause/Resume, Exit. |
 | `Settings` | JSON persistence at `%APPDATA%\WebWallpaper\settings.json`: URL and paused flag. |
 | `App` | Wires everything: startup, monitor-change handling, single-instance guard, clean shutdown. |
