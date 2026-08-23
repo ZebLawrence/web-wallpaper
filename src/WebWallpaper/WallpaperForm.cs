@@ -39,7 +39,8 @@ internal sealed class WallpaperForm : Form
     public void AttachTo(IntPtr wallpaperTarget)
     {
         var handle = Handle; // forces handle creation before SetParent
-        WallpaperInterop.SetParent(handle, wallpaperTarget);
+        var result = WallpaperInterop.SetParent(handle, wallpaperTarget);
+        Log.Write($"AttachTo: handle=0x{handle:X} target=0x{wallpaperTarget:X} SetParent={result} err={System.Runtime.InteropServices.Marshal.GetLastWin32Error()}");
         // Child coordinates are relative to the wallpaper layer, whose origin is the virtual screen's top-left.
         var v = SystemInformation.VirtualScreen;
         WallpaperInterop.SetWindowPos(handle, IntPtr.Zero,
@@ -47,6 +48,7 @@ internal sealed class WallpaperForm : Form
             _screenBounds.Width, _screenBounds.Height,
             WallpaperInterop.SWP_NOZORDER | WallpaperInterop.SWP_NOACTIVATE);
         Show();
+        Log.Write($"AttachTo: shown, visible={Visible} handleNow=0x{Handle:X}");
     }
 
     public async Task InitWebViewAsync(string userDataFolder)

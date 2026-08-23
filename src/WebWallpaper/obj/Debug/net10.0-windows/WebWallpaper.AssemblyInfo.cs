@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WebWallpaper")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0efd86b62480a3f392765cef54a41c2add39cc8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af50cd99b1f269726ed09f17df5ceab7b6f694ff")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebWallpaper")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebWallpaper")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

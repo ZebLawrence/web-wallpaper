@@ -47,16 +47,26 @@ internal sealed class WallpaperAppContext : ApplicationContext
 
     async void RebuildWindows()
     {
-        TearDownWindows();
-        if (_settings.Paused) return;
-
-        IntPtr target = WallpaperInterop.GetWallpaperTarget();
-        foreach (var screen in Screen.AllScreens)
+        try
         {
-            var form = new WallpaperForm(screen.Bounds, _settings.Url);
-            _forms.Add(form);
-            form.AttachTo(target);
-            await form.InitWebViewAsync(UserDataFolder);
+            TearDownWindows();
+            if (_settings.Paused) return;
+
+            IntPtr target = WallpaperInterop.GetWallpaperTarget();
+            Log.Write($"RebuildWindows: target=0x{target:X}");
+            foreach (var screen in Screen.AllScreens)
+            {
+                Log.Write($"RebuildWindows: screen {screen.Bounds}");
+                var form = new WallpaperForm(screen.Bounds, _settings.Url);
+                _forms.Add(form);
+                form.AttachTo(target);
+                await form.InitWebViewAsync(UserDataFolder);
+                Log.Write($"RebuildWindows: webview ready, handle=0x{form.Handle:X}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Write($"RebuildWindows FAILED: {ex}");
         }
     }
 
