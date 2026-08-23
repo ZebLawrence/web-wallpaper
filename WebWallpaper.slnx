@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WebWallpaper/WebWallpaper.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WebWallpaper.Tests/WebWallpaper.Tests.csproj" />
+  </Folder>
+</Solution>
