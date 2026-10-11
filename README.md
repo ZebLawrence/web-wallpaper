@@ -11,9 +11,13 @@ every display shows its own copy of the page.
 
 WebWallpaper uses the same trick as Wallpaper Engine and Lively Wallpaper: it asks the
 shell's `Progman` window (message `0x052C`) to spawn a `WorkerW` window that sits between
-the static wallpaper and the desktop icon layer, then re-parents a borderless
-[WebView2](https://developer.microsoft.com/microsoft-edge/webview2/) window into it —
-one per monitor. Because the page lives below the icon layer, input never reaches it.
+the static wallpaper and the desktop icon layer, then re-parents a borderless window into
+it — one per monitor. The page is rendered by
+[WebView2](https://developer.microsoft.com/microsoft-edge/webview2/) in visual-hosting
+mode (CompositionController + DirectComposition), so it never receives input from the
+system; when *Mouse interaction* is on, a low-level mouse hook forwards desktop-only
+mouse events to the page through WebView2's input API with exact per-monitor DPI
+coordinates.
 
 ## Download
 
@@ -33,6 +37,7 @@ icon**:
 |---|---|
 | Set URL… | Change the webpage (also on double-click of the tray icon) |
 | Reload | Refresh the page on all monitors |
+| Mouse interaction | Let mouse moves, clicks, drags, and scrolls on the **bare desktop** reach the page — useful to get the page into the state you want, then toggle it back off. Input over your app windows or the taskbar is never forwarded, and desktop icons keep working. Keyboard input is never forwarded. |
 | Pause | Hide the wallpaper and suspend the browser to free CPU/GPU |
 | Exit | Quit and restore your normal wallpaper |
 

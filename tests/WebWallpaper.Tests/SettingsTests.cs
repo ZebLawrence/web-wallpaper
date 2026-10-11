@@ -10,6 +10,7 @@ public class SettingsTests
         var s = Settings.Load(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()));
         Assert.Equal("about:blank", s.Url);
         Assert.False(s.Paused);
+        Assert.False(s.MouseInteraction);
     }
 
     [Fact]
@@ -18,10 +19,11 @@ public class SettingsTests
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "settings.json");
         try
         {
-            new Settings { Url = "https://example.com/", Paused = true }.Save(path);
+            new Settings { Url = "https://example.com/", Paused = true, MouseInteraction = true }.Save(path);
             var s = Settings.Load(path);
             Assert.Equal("https://example.com/", s.Url);
             Assert.True(s.Paused);
+            Assert.True(s.MouseInteraction);
         }
         finally
         {

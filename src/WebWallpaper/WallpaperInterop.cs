@@ -20,6 +20,71 @@ internal static class WallpaperInterop
     [DllImport("user32.dll")]
     static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
 
+    [StructLayout(LayoutKind.Sequential)]
+    struct POINT { public int X, Y; }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct RECT { public int Left, Top, Right, Bottom; }
+
+    [DllImport("user32.dll")]
+    static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
+
+    [DllImport("user32.dll")]
+    static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+    /// <summary>
+    /// Finds the top-level input-helper window the WebView2 browser process creates in
+    /// visual-hosting mode: class Chrome_WidgetWin_1, owned by <paramref name="browserPid"/>,
+    /// exactly covering <paramref name="screenRect"/>. Returns Zero when absent.
+    /// </summary>
+    internal static IntPtr FindBrowserHelperWindow(uint browserPid, Rectangle screenRect)
+    {
+        IntPtr found = IntPtr.Zero;
+        var sb = new StringBuilder(64);
+        EnumWindows((top, _) =>
+        {
+            GetWindowThreadProcessId(top, out uint pid);
+            if (pid != browserPid) return true;
+            sb.Clear();
+            GetClassName(top, sb, sb.Capacity);
+            if (sb.ToString() != "Chrome_WidgetWin_1") return true;
+            GetWindowRect(top, out RECT r);
+            if (r.Left == screenRect.Left && r.Top == screenRect.Top &&
+                r.Right == screenRect.Right && r.Bottom == screenRect.Bottom)
+            {
+                found = top;
+                return false;
+            }
+            return true;
+        }, IntPtr.Zero);
+        return found;
+    }
+
+    [DllImport("user32.dll")]
+    static extern IntPtr MonitorFromPoint(POINT pt, uint flags);
+
+    [DllImport("shcore.dll")]
+    static extern int GetDpiForMonitor(IntPtr hMonitor, int dpiType, out uint dpiX, out uint dpiY);
+
+    const uint MONITOR_DEFAULTTONEAREST = 2;
+
+    /// <summary>Effective DPI scale (1.0 = 96 DPI) of the monitor covering the given bounds.</summary>
+    internal static double GetScaleForMonitor(Rectangle monitorBounds)
+    {
+        var center = new POINT
+        {
+            X = monitorBounds.X + monitorBounds.Width / 2,
+            Y = monitorBounds.Y + monitorBounds.Height / 2,
+        };
+        IntPtr monitor = MonitorFromPoint(center, MONITOR_DEFAULTTONEAREST);
+        return GetDpiForMonitor(monitor, 0 /* MDT_EFFECTIVE_DPI */, out uint dpiX, out _) == 0
+            ? dpiX / 96.0
+            : 1.0;
+    }
+
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 

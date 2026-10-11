@@ -6,6 +6,7 @@ public sealed class Settings
 {
     public string Url { get; set; } = "about:blank";
     public bool Paused { get; set; }
+    public bool MouseInteraction { get; set; }
 
     public static string DefaultPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
